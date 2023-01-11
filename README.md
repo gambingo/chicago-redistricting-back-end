@@ -14,7 +14,8 @@ TKTK
     - [2020 TIGER/Line® Shapefiles: Census Tracts](https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2020&layergroup=Census+Tracts)
 
 <br>
-### Develepment
+
+### Development
 
 1. This project was built with Python version `3.10.9`. I use [Pyenv](https://github.com/pyenv/pyenv#installation) to manage my Python installation.
 
