@@ -3,3 +3,4 @@ __pycache__/
 .python-version
 notebooks/.ipynb_checkpoints/
 *.pkl
+.DS_Store

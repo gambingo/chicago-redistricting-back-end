@@ -12,8 +12,13 @@ TKTK
 - [2020 Decennial Redistricting Data (i.e. "the census") for all census blocks in Cook County](https://data.census.gov/table?g=0500000US17031$1000000&y=2020&d=DEC+Redistricting+Data+(PL+94-171)&tid=DECENNIALPL2020.P1)
 - [Census Bureau TIGER/Line® Shapefiles](https://www.census.gov/cgi-bin/geo/shapefiles/index.php)
     - [2020 TIGER/Line® Shapefiles: Census Tracts](https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2020&layergroup=Census+Tracts)
-
 <br>
+
+
+### References
+- [Dual Annealing Optimization With Python](https://machinelearningmastery.com/dual-annealing-optimization-with-python) by Jason Brownlee
+<br>
+
 
 ### Development
 
