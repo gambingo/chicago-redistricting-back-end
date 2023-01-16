@@ -10,6 +10,7 @@ packages = [{include = "chicago_redistricting_back_end"}]
 python = "3.10.9"
 geopandas = "^0.12.2"
 shapely = "^2.0.0"
+tqdm = "^4.64.1"
 
 
 [tool.poetry.group.dev.dependencies]
