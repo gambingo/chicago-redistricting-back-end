@@ -28,10 +28,16 @@ def load_data():
     # Chicago Community Areas
     filename = "Boundaries - Community Areas (current).geojson"
     community_areas = gpd.read_file(DATA_DIR / filename)
+    index_col = "area_num_1"
+    community_areas[index_col] = community_areas[index_col].astype(int)
+    community_areas.set_index(index_col, inplace=True)
     
     # Illinois Census Tracts
     filename = "2020-census/tl_2020_17_tract/tl_2020_17_tract.shp"
     illinois_tracts = gpd.read_file(DATA_DIR / filename)
+    index_col = "NAME"
+    illinois_tracts[index_col] = illinois_tracts[index_col].astype(float)
+    illinois_tracts.set_index(index_col, inplace=True)
 
     # City of Chicago Boundaries
     filename = "Boundaries - City.geojson"
@@ -52,11 +58,14 @@ def identify_tracts_within_chicagoland(city_limits, illinois_tracts, load_existi
 
     else:
         buffer_dist = 0.04
-        bubble_mask = illinois_tracts.geometry.progress_apply(
-            lambda gmtry: city_limits.geometry.buffer(buffer_dist).contains(gmtry)
-            ).values
-        chicagoland_tracts = illinois_tracts[bubble_mask]
-        chicagoland_tracts.to_pickle(DATA_DIR / filename)
+        chicago_bubble = city_limits.geometry.buffer(buffer_dist).geometry
+        chicago_bubble_series = gpd.GeoSeries(
+            [chicago_bubble.iloc[0]]*illinois_tracts.shape[0],
+            index=illinois_tracts.index)
+        # The GeoSeries.within() method only compares row to row for series 
+        # that have the same index.
+        chicagoland_tracts = illinois_tracts[illinois_tracts.within(chicago_bubble_series)]
+        chicagoland_tracts.to_pickle(DATA_DIR / filename)        
 
     return chicagoland_tracts
 
@@ -91,7 +100,7 @@ def assign_tracts_to_community_areas(chicagoland_tracts, community_areas):
     CA_tract_assignments = pd.DataFrame(
         pairwise_overlap.T.idxmax(), 
         columns=["Community Area"])
-    CA_tract_assignments.index.name = "Tract"
+    CA_tract_assignments.index.name = "Census Tract"
     CA_tract_assignments
 
     return CA_tract_assignments
@@ -109,7 +118,6 @@ def identify_tracts_within_chicago(chicagoland_tracts, CA_tract_assignments):
 
 if __name__ == "__main__":
     community_areas, illinois_tracts, city_limits = load_data()
-    chicagoland_tracts = identify_tracts_within_chicagoland(city_limits, illinois_tracts)
+    chicagoland_tracts = identify_tracts_within_chicagoland(city_limits, illinois_tracts, load_existing=False)
     CA_tract_assignments = assign_tracts_to_community_areas(chicagoland_tracts, community_areas)
-
     print(CA_tract_assignments)
