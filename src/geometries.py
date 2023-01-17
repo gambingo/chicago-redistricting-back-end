@@ -5,12 +5,8 @@ can tally up the popluation of each community area
 import os
 from pathlib import Path
 
-from tqdm import tqdm
 import pandas as pd
 import geopandas as gpd
-
-tqdm.pandas()
-
 
 # This is to suppress the CRS warning that generates during the buffer 
 # operation. It's not a problem in this case, but I sure wish I had a more 
@@ -22,6 +18,7 @@ warnings.filterwarnings("ignore")
 REPO_ROOT_DIR = Path(__file__).parent.parent
 DATA_DIR = REPO_ROOT_DIR / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 
 
 def load_data():
@@ -46,7 +43,7 @@ def load_data():
     return community_areas, illinois_tracts, city_limits
 
 
-def identify_tracts_within_chicagoland(city_limits, illinois_tracts, load_existing=True):
+def identify_tracts_within_chicagoland(city_limits, illinois_tracts, load_existing=False):
     """
     Use a buffer to draw a "bubble" around the city limits and filter to all 
     tracts within that bubble. This approach will capture any census tracts 
@@ -101,7 +98,6 @@ def assign_tracts_to_community_areas(chicagoland_tracts, community_areas):
         pairwise_overlap.T.idxmax(), 
         columns=["Community Area"])
     CA_tract_assignments.index.name = "Census Tract"
-    CA_tract_assignments
 
     return CA_tract_assignments
 
@@ -111,13 +107,16 @@ def identify_tracts_within_chicago(chicagoland_tracts, CA_tract_assignments):
     From the community area assignments, we now have tracts that are only
     within Chicago and not "Chicagoland". Save these tracts.
     """
-    # chicago_tracts = chicagoland_tracts.
-    pass
+    mask = chicagoland_tracts.index.isin(CA_tract_assignments.index)
+    chicago_tracts = chicagoland_tracts[mask]
+    chicago_tracts.to_pickle(DATA_DIR / "chicago_census_tracts.pkl")
+    return chicago_tracts
 
 
 
 if __name__ == "__main__":
     community_areas, illinois_tracts, city_limits = load_data()
-    chicagoland_tracts = identify_tracts_within_chicagoland(city_limits, illinois_tracts, load_existing=False)
+    chicagoland_tracts = identify_tracts_within_chicagoland(city_limits, illinois_tracts)
     CA_tract_assignments = assign_tracts_to_community_areas(chicagoland_tracts, community_areas)
-    print(CA_tract_assignments)
+    chicago_tracts = identify_tracts_within_chicago(chicagoland_tracts, CA_tract_assignments)
+    print(chicago_tracts)
