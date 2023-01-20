@@ -36,3 +36,25 @@ TKTK
     ```
 
     Then select the newly created kernel, `chicago-redistricting`, when starting a notebook.
+
+
+##### Notes on working with Poetry
+
+I had some trouble resolving my installation of Poetry with Pyenv. Poetry seems stuck to the python version from when I installed it and fails to recognize my local python version specified with pyenv. Here is how I have learned to create a new project with Poetry as a workaround.
+
+    ```bash
+    mkdir new-project
+    cd new-project
+    pyenv local 3.10.9
+    poetry init
+
+    # Poetry will autocomplete a python version of ^3.9
+    # Change this to 3.10.9, or whichever version you prefer
+    # Complete project initialization, without interactively specifying dependencies
+    poetry env use 3.10.0
+    poetry update
+
+    # Now you may specify your depencies like so:
+    poetry add package-name
+    poetry add dev-package1 dev-package2 --group dev
+    ```

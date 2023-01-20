@@ -8,17 +8,13 @@ from pathlib import Path
 import pandas as pd
 import geopandas as gpd
 
+from directories import DATA_DIR
+
 # This is to suppress the CRS warning that generates during the buffer 
 # operation. It's not a problem in this case, but I sure wish I had a more 
 # specific suppression.
 import warnings
 warnings.filterwarnings("ignore")
-
-
-REPO_ROOT_DIR = Path(__file__).parent.parent
-DATA_DIR = REPO_ROOT_DIR / "data"
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-
 
 
 def load_data():

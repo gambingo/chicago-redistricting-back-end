@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "chicago-redistricting-back-end"
 version = "0.1.0"
-description = "Building Chicago Aldermanic Wards out of \"Community Areas\", optimized with simulated annealing."
+description = "A library for programmatically drawing chicago aldermanic wards via simmulated annealing."
 authors = ["Joe Gambino <joe@gam.bingo>"]
 readme = "README.md"
 packages = [{include = "chicago_redistricting_back_end"}]
@@ -10,15 +10,14 @@ packages = [{include = "chicago_redistricting_back_end"}]
 python = "3.10.9"
 geopandas = "^0.12.2"
 shapely = "^2.0.0"
-tqdm = "^4.64.1"
 
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
 jupyterlab = "^3.5.2"
-ipykernel = "^6.20.1"
+ipykernel = "^6.20.2"
+matplotlib = "^3.6.3"
 importlib-metadata = "^6.0.0"
-matplotlib = "^3.6.2"
 
 [build-system]
 requires = ["poetry-core"]
