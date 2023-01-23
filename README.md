@@ -51,7 +51,7 @@ I had some trouble resolving my installation of Poetry with Pyenv. Poetry seems 
     # Poetry will autocomplete a python version of ^3.9
     # Change this to 3.10.9, or whichever version you prefer
     # Complete project initialization, without interactively specifying dependencies
-    poetry env use 3.10.0
+    poetry env use 3.10.9
     poetry update
 
     # Now you may specify your depencies like so:
