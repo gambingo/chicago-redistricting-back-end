@@ -3,12 +3,13 @@ Data Preprocessing: Assigning each census tract to a community area so that we
 can tally up the popluation of each community area
 """
 import os
-from pathlib import Path
+# from pathlib import Path
 
 import pandas as pd
 import geopandas as gpd
 
 from directories import DATA_DIR
+import population as population
 
 # This is to suppress the CRS warning that generates during the buffer 
 # operation. It's not a problem in this case, but I sure wish I had a more 
@@ -17,7 +18,13 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def load_data():
+def load_cleaned_data():
+    # chicago_tracts = pd.read_pickle(DATA_DIR / "chicago_census_tracts.pkl")
+    community_areas = pd.read_pickle(DATA_DIR / "community_areas.pkl")
+    return community_areas
+
+
+def load_raw_data():
     # Chicago Community Areas
     filename = "Boundaries - Community Areas (current).geojson"
     community_areas = gpd.read_file(DATA_DIR / filename)
@@ -95,6 +102,7 @@ def assign_tracts_to_community_areas(chicagoland_tracts, community_areas):
         columns=["Community Area"])
     CA_tract_assignments.index.name = "Census Tract"
 
+    # CA_tract_assignments.to_pickle(DATA_DIR / "CA_tract_assignments.pkl")
     return CA_tract_assignments
 
 
@@ -105,14 +113,37 @@ def identify_tracts_within_chicago(chicagoland_tracts, CA_tract_assignments):
     """
     mask = chicagoland_tracts.index.isin(CA_tract_assignments.index)
     chicago_tracts = chicagoland_tracts[mask]
-    chicago_tracts.to_pickle(DATA_DIR / "chicago_census_tracts.pkl")
+    # chicago_tracts.to_pickle(DATA_DIR / "chicago_census_tracts.pkl")
     return chicago_tracts
 
 
+def community_area_populations(chicago_tracts, CA_tract_assignments, community_areas):
+    tract_populations = population.load_cleaned_data()
+    chicago_tracts = chicago_tracts.merge(tract_populations, 
+        left_index=True, 
+        right_index=True, 
+        how="left")
+
+    chicago_tracts = chicago_tracts.merge(CA_tract_assignments,
+        left_index=True, 
+        right_index=True, 
+        how="left")
+
+    CA_populations = chicago_tracts.groupby("Community Area").sum()[["Population"]]
+    community_areas = community_areas.merge(CA_populations,
+        left_index=True, 
+        right_index=True, 
+        how="left")
+
+    chicago_tracts.to_pickle(DATA_DIR / "chicago_census_tracts.pkl")
+    community_areas.to_pickle(DATA_DIR / "community_areas.pkl")
+
+    
 
 if __name__ == "__main__":
-    community_areas, illinois_tracts, city_limits = load_data()
+    community_areas, illinois_tracts, city_limits = load_raw_data()
     chicagoland_tracts = identify_tracts_within_chicagoland(city_limits, illinois_tracts)
     CA_tract_assignments = assign_tracts_to_community_areas(chicagoland_tracts, community_areas)
     chicago_tracts = identify_tracts_within_chicago(chicagoland_tracts, CA_tract_assignments)
-    print(chicago_tracts)
+    community_area_populations(chicago_tracts, CA_tract_assignments, community_areas)
+

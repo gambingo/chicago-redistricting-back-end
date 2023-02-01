@@ -37,6 +37,12 @@ TKTK
 
     Then select the newly created kernel, `chicago-redistricting`, when starting a notebook.
 
+1. Preprocess data with:
+    ```bash
+    poetry run python src/population.py
+    poetry run python src/geometries.py
+    ```
+
 
 ##### Notes on working with Poetry
 
