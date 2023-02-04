@@ -1,6 +1,6 @@
 import pandas as pd
 
-from directories import DATA_DIR
+from src import DATA_DIR
 
 
 def load_cleaned_data():
@@ -9,6 +9,9 @@ def load_cleaned_data():
 
 
 def load_clean_and_save_raw_data():
+    """
+    Parse population data per census tract.
+    """
     filename = "2020-census/DECENNIALPL2020.P2_2023-01-17T154516/DECENNIALPL2020.P2-Data.csv"
     df = pd.read_csv(DATA_DIR / filename, header=1)
     df = clean_data(df)
@@ -31,7 +34,7 @@ def clean_data(df):
         "Total",
     ]
     df = df[mvp_columns].copy()
-    df.rename(columns={"Total": "Population"}, inplace=True)
+    df.rename(columns={"Total": "population"}, inplace=True)
 
     df = parse_geographic_area_name(df)
     return df

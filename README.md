@@ -29,6 +29,11 @@ TKTK
     poetry install
     ```
 
+1. Preprocess data with:
+    ```bash
+    poetry run python preprocess_data.py
+    ```
+
 1. If you would like to work with jupyter notebooks while using Poetry, run:
     ```bash
     poetry run python -m ipykernel install --user --name chicago-redistricting
@@ -36,12 +41,6 @@ TKTK
     ```
 
     Then select the newly created kernel, `chicago-redistricting`, when starting a notebook.
-
-1. Preprocess data with:
-    ```bash
-    poetry run python src/population.py
-    poetry run python src/geometries.py
-    ```
 
 
 ##### Notes on working with Poetry
@@ -57,7 +56,7 @@ I had some trouble resolving my installation of Poetry with Pyenv. Poetry seems 
     # Poetry will autocomplete a python version of ^3.9
     # Change this to 3.10.9, or whichever version you prefer
     # Complete project initialization, without interactively specifying dependencies
-    poetry env use 3.10.0
+    poetry env use 3.10.9
     poetry update
 
     # Now you may specify your depencies like so:

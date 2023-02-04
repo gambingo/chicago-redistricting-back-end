@@ -4,3 +4,4 @@ __pycache__/
 notebooks/.ipynb_checkpoints/
 *.pkl
 .DS_Store
+scratchpad.ipynb

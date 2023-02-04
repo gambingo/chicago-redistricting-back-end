@@ -8,8 +8,8 @@ import os
 import pandas as pd
 import geopandas as gpd
 
-from directories import DATA_DIR
-import population as population
+from src import DATA_DIR
+from src import population
 
 # This is to suppress the CRS warning that generates during the buffer 
 # operation. It's not a problem in this case, but I sure wish I had a more 
@@ -28,7 +28,9 @@ def load_raw_data():
     # Chicago Community Areas
     filename = "Boundaries - Community Areas (current).geojson"
     community_areas = gpd.read_file(DATA_DIR / filename)
-    index_col = "area_num_1"
+    index_col = "id"
+    renames = {"area_num_1": index_col, "community": "name"}
+    community_areas.rename(columns=renames, inplace=True)
     community_areas[index_col] = community_areas[index_col].astype(int)
     community_areas.set_index(index_col, inplace=True)
     
@@ -129,7 +131,7 @@ def community_area_populations(chicago_tracts, CA_tract_assignments, community_a
         right_index=True, 
         how="left")
 
-    CA_populations = chicago_tracts.groupby("Community Area").sum()[["Population"]]
+    CA_populations = chicago_tracts.groupby("Community Area").sum()[["population"]]
     community_areas = community_areas.merge(CA_populations,
         left_index=True, 
         right_index=True, 
@@ -137,13 +139,23 @@ def community_area_populations(chicago_tracts, CA_tract_assignments, community_a
 
     chicago_tracts.to_pickle(DATA_DIR / "chicago_census_tracts.pkl")
     community_areas.to_pickle(DATA_DIR / "community_areas.pkl")
+    return community_areas
 
-    
 
-if __name__ == "__main__":
+def identify_community_area_tracts_and_populations():
+    """
+    Match census tract boundaries to the community areas that contain them.
+    Return a geodataframe of these boundaries with population data.
+    """
     community_areas, illinois_tracts, city_limits = load_raw_data()
     chicagoland_tracts = identify_tracts_within_chicagoland(city_limits, illinois_tracts)
     CA_tract_assignments = assign_tracts_to_community_areas(chicagoland_tracts, community_areas)
     chicago_tracts = identify_tracts_within_chicago(chicagoland_tracts, CA_tract_assignments)
-    community_area_populations(chicago_tracts, CA_tract_assignments, community_areas)
+    community_areas = community_area_populations(chicago_tracts, CA_tract_assignments, community_areas)
+    return community_areas
+
+    
+
+if __name__ == "__main__":
+    _ = identify_community_area_tracts_and_populations()
 
